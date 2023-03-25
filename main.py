@@ -34,19 +34,27 @@ def handle_age(update: Update, context: CallbackContext):
     age = update.callback_query.data
     update.callback_query.message.edit_text('Choose your skin type:', reply_markup=get_skin_type_buttons())
 
+
 def handle_skin_type(update: Update, context: CallbackContext):
     global skin_type
     skin_type = update.callback_query.data
     if skin_type == 'normal':
         update.callback_query.message.edit_text('Choose your skin subtype:', reply_markup=get_skin_subtype_buttons())
-    elif skin_type == 'dry':
-        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons('dry'))
-    elif skin_type == 'oily':
-        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons('oily'))
-    elif skin_type == 'combinated':
-        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons('combinated'))
+    elif skin_type in ['dry', 'oily', 'combination']:
+        context.user_data['skin_type'] = skin_type
+        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
+
+
+def handle_skin_condition(update: Update, context: CallbackContext):
+    global skin_subtype
+    skin_subtype = update.callback_query.data
+    update.callback_query.message.edit_text('Thank you for your input!')
+    # Get all user responses and update the last message
+    age = context.user_data.get('age', '')
+    skin_type = context.user_data.get('skin_type', '')
+    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}')
 
 
 def get_skin_condition_buttons(skin_type):
@@ -76,13 +84,11 @@ def get_skin_condition_buttons(skin_type):
     return InlineKeyboardMarkup(buttons)
 
 
-def handle_skin_subtype(update: Update, context: CallbackContext):
-    global skin_subtype
-    skin_subtype = update.callback_query.data
-    update.callback_query.message.edit_text('Thank you for your input!')
+# def handle_skin_subtype(update: Update, context: CallbackContext):
+#     global skin_subtype
+#     skin_subtype = update.callback_query.data
+#     update.callback_query.message.edit_text('Thank you for your input!')
 
-    # Print all user responses
-    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}')
 
 def get_age_buttons():
     keyboard = [
@@ -173,7 +179,7 @@ def main():
     dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
     dp.add_handler(CallbackQueryHandler(handle_age, pattern='^\\d+-\\d+$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
-    dp.add_handler(CallbackQueryHandler(handle_skin_subtype, pattern='^(normal_wrinkles|normal_sensitive)$'))
+    # dp.add_handler(CallbackQueryHandler(handle_skin_subtype, pattern='^(normal_wrinkles|normal_sensitive)$'))
 
 
     updater.start_polling()
