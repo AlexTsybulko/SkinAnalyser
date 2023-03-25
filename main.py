@@ -27,6 +27,7 @@ def start(update: Update, context: CallbackContext):
     global age
     age = ''
     update.message.reply_text('Choose your age:', reply_markup=get_age_buttons())
+    # update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
 
 def handle_age(update: Update, context: CallbackContext):
     global age
@@ -38,8 +39,42 @@ def handle_skin_type(update: Update, context: CallbackContext):
     skin_type = update.callback_query.data
     if skin_type == 'normal':
         update.callback_query.message.edit_text('Choose your skin subtype:', reply_markup=get_skin_subtype_buttons())
+    elif skin_type == 'dry':
+        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons('dry'))
+    elif skin_type == 'oily':
+        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons('oily'))
+    elif skin_type == 'combinated':
+        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons('combinated'))
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
+
+
+def get_skin_condition_buttons(skin_type):
+    buttons = []
+    if skin_type == 'dry':
+        buttons = [
+            [InlineKeyboardButton("Dry + wrinkles", callback_data='dry_wrinkles')],
+            [InlineKeyboardButton("Dry + rashy", callback_data='dry_rashy')],
+            [InlineKeyboardButton("Dry + acne", callback_data='dry_acne')],
+            [InlineKeyboardButton("Dry + sensitive", callback_data='dry_sensitive')]
+        ]
+    elif skin_type == 'oily':
+        buttons = [
+            [InlineKeyboardButton("Oily + wrinkles", callback_data='oily_wrinkles')],
+            [InlineKeyboardButton("Oily + rashy", callback_data='oily_rashy')],
+            [InlineKeyboardButton("Oily + acne", callback_data='oily_acne')],
+            [InlineKeyboardButton("Oily + sensitive", callback_data='oily_sensitive')]
+        ]
+    elif skin_type == 'combinated':
+        buttons = [
+            [InlineKeyboardButton("Combinated + wrinkles", callback_data='combo_wrinkles')],
+            [InlineKeyboardButton("Combinated + rashy", callback_data='combo_rashy')],
+            [InlineKeyboardButton("Combinated + acne", callback_data='combo_acne')],
+            [InlineKeyboardButton("Combinated + sensitive", callback_data='combo_sensitive')]
+        ]
+
+    return InlineKeyboardMarkup(buttons)
+
 
 def handle_skin_subtype(update: Update, context: CallbackContext):
     global skin_subtype
@@ -63,7 +98,7 @@ def get_skin_type_buttons():
         [InlineKeyboardButton("Normal", callback_data='normal')],
         [InlineKeyboardButton("Dry", callback_data='dry')],
         [InlineKeyboardButton("Oily", callback_data='oily')],
-        [InlineKeyboardButton("Combination", callback_data='combination')]
+        [InlineKeyboardButton("Combined", callback_data='combined')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -89,10 +124,6 @@ def load_model():
 
     return model, class_indices
 
-
-# Telegram bot handlers
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
 
 
 def handle_photo(update: Update, context: CallbackContext):
@@ -141,7 +172,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
     dp.add_handler(CallbackQueryHandler(handle_age, pattern='^\\d+-\\d+$'))
-    dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combination)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_subtype, pattern='^(normal_wrinkles|normal_sensitive)$'))
 
 
