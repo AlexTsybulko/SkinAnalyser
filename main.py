@@ -29,6 +29,7 @@ def load_model():
 def start(update: Update, context: CallbackContext):
     update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
 
+
 def handle_photo(update: Update, context: CallbackContext):
     photo = update.message.photo[-1]
     photo_file = photo.get_file()
@@ -37,8 +38,11 @@ def handle_photo(update: Update, context: CallbackContext):
         photo_file.download(out=f)
         f.seek(0)
         img = Image.open(f)
+        img = img.convert('RGB')
+        img = img.resize((IMG_SIZE, IMG_SIZE), Image.ANTIALIAS)
 
-    img = img.resize((IMG_SIZE, IMG_SIZE))
+    update.message.reply_text('image uploaded')
+
     img_array = np.asarray(img) / 255.0
     img_batch = np.expand_dims(img_array, axis=0)
     prediction = model.predict(img_batch)
