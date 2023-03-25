@@ -52,8 +52,8 @@ def handle_skin_condition(update: Update, context: CallbackContext):
     skin_subtype = update.callback_query.data
     update.callback_query.message.edit_text('Thank you for your input!')
     # Get all user responses and update the last message
-    age = context.user_data.get('age', '')
-    skin_type = context.user_data.get('skin_type', '')
+    # age = context.user_data.get('age', '')
+    # skin_type = context.user_data.get('skin_type', '')
     update.callback_query.message.edit_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}')
 
 
