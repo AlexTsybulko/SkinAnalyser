@@ -52,7 +52,6 @@ def handle_photo(update: Update, context: CallbackContext):
 
     # class_mapping = {v: k for k, v in class_indices.items()}
     update.message.reply_text(class_indices)
-    update.message.reply_text(predicted_class)
 
     skin_type = class_indices[predicted_class[0]]
 
