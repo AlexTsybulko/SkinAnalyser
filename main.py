@@ -49,9 +49,10 @@ def handle_photo(update: Update, context: CallbackContext):
     predicted_class = np.argmax(prediction, axis=1)
 
     class_mapping = {v: k for k, v in class_indices.items()}
-    skin_type = class_mapping[predicted_class[0]]
     update.message.reply_text(class_mapping)
     update.message.reply_text(predicted_class)
+
+    skin_type = class_mapping[predicted_class[0]]
 
     update.message.reply_text(f'The predicted skin type is: {skin_type}')
 
