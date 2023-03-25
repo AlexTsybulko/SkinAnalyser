@@ -89,17 +89,17 @@ def main():
     # image_path = "dry(377).jpg"
     # skin_type = test(image_path)
     # print(skin_type)
-    # # Replace with your API token
-    # api_token = '6248741319:AAFGMjQAokh679_lM4PQjwe5xpp2ohgSvco'
-    #
-    # updater = Updater(api_token)
-    #
-    # dp = updater.dispatcher
-    # dp.add_handler(CommandHandler("start", start))
-    # dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
-    #
-    # updater.start_polling()
-    # updater.idle()
+    # Replace with your API token
+    api_token = '6248741319:AAFGMjQAokh679_lM4PQjwe5xpp2ohgSvco'
+
+    updater = Updater(api_token)
+
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
+
+    updater.start_polling()
+    updater.idle()
 
 if __name__ == '__main__':
     main()
