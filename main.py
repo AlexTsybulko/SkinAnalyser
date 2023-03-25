@@ -24,8 +24,6 @@ skin_subtype = ''
 
 # Handler functions for different stages of the conversation
 def start(update: Update, context: CallbackContext):
-    global age
-    age = ''
     update.message.reply_text('Choose your age:', reply_markup=get_age_buttons())
     # update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
 
@@ -40,7 +38,7 @@ def handle_skin_type(update: Update, context: CallbackContext):
     skin_type = update.callback_query.data
     if skin_type == 'normal':
         update.callback_query.message.edit_text('Choose your skin subtype:', reply_markup=get_skin_subtype_buttons())
-    elif skin_type in ['dry', 'oily', 'combination']:
+    elif skin_type in ['dry', 'oily', 'combinated']:
         context.user_data['skin_type'] = skin_type
         update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
     else:
@@ -51,9 +49,6 @@ def handle_skin_condition(update: Update, context: CallbackContext):
     global skin_subtype
     skin_subtype = update.callback_query.data
     update.callback_query.message.edit_text('Thank you for your input!')
-    # Get all user responses and update the last message
-    # age = context.user_data.get('age', '')
-    # skin_type = context.user_data.get('skin_type', '')
     update.callback_query.message.edit_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}')
 
 
@@ -61,24 +56,24 @@ def get_skin_condition_buttons(skin_type):
     buttons = []
     if skin_type == 'dry':
         buttons = [
-            [InlineKeyboardButton("Dry + wrinkles", callback_data='dry_wrinkles')],
-            [InlineKeyboardButton("Dry + rashy", callback_data='dry_rashy')],
-            [InlineKeyboardButton("Dry + acne", callback_data='dry_acne')],
-            [InlineKeyboardButton("Dry + sensitive", callback_data='dry_sensitive')]
+            [InlineKeyboardButton("Dry + wrinkles", callback_data='Dry + wrinkles')],
+            [InlineKeyboardButton("Dry + rashy", callback_data='Dry + rashy')],
+            [InlineKeyboardButton("Dry + acne", callback_data='Dry + acne')],
+            [InlineKeyboardButton("Dry + sensitive", callback_data='Dry + sensitive')]
         ]
     elif skin_type == 'oily':
         buttons = [
-            [InlineKeyboardButton("Oily + wrinkles", callback_data='oily_wrinkles')],
-            [InlineKeyboardButton("Oily + rashy", callback_data='oily_rashy')],
-            [InlineKeyboardButton("Oily + acne", callback_data='oily_acne')],
-            [InlineKeyboardButton("Oily + sensitive", callback_data='oily_sensitive')]
+            [InlineKeyboardButton("Oily + wrinkles", callback_data='Oily + wrinkles')],
+            [InlineKeyboardButton("Oily + rashy", callback_data='Oily + rashy')],
+            [InlineKeyboardButton("Oily + acne", callback_data='Oily + acne')],
+            [InlineKeyboardButton("Oily + sensitive", callback_data='Oily + sensitive')]
         ]
     elif skin_type == 'combinated':
         buttons = [
-            [InlineKeyboardButton("Combinated + wrinkles", callback_data='combo_wrinkles')],
-            [InlineKeyboardButton("Combinated + rashy", callback_data='combo_rashy')],
-            [InlineKeyboardButton("Combinated + acne", callback_data='combo_acne')],
-            [InlineKeyboardButton("Combinated + sensitive", callback_data='combo_sensitive')]
+            [InlineKeyboardButton("Combinated + wrinkles", callback_data='Combinated + wrinkles')],
+            [InlineKeyboardButton("Combinated + rashy", callback_data='Combinated + rashy')],
+            [InlineKeyboardButton("Combinated + acne", callback_data='Combinated + acne')],
+            [InlineKeyboardButton("Combinated + sensitive", callback_data='Combinated + sensitive')]
         ]
 
     return InlineKeyboardMarkup(buttons)
@@ -110,8 +105,8 @@ def get_skin_type_buttons():
 
 def get_skin_subtype_buttons():
     keyboard = [
-        [InlineKeyboardButton("Normal with wrinkles", callback_data='normal_wrinkles')],
-        [InlineKeyboardButton("Normal and sensitive", callback_data='normal_sensitive')]
+        [InlineKeyboardButton("Normal with wrinkles", callback_data='Normal with wrinkles')],
+        [InlineKeyboardButton("Normal and sensitive", callback_data='Normal and sensitive')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
