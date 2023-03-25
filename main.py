@@ -6,12 +6,75 @@ from PIL import Image
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
 import tensorflow as tf
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
+
 
 # Define constants
 IMG_SIZE = 64
 BATCH_SIZE = 32
 NUM_CLASSES = 2  # Number of skin types
 EPOCHS = 50
+
+
+# Global variables to store user responses
+age = ''
+skin_type = ''
+skin_subtype = ''
+
+# Handler functions for different stages of the conversation
+def start(update: Update, context: CallbackContext):
+    global age
+    age = ''
+    update.message.reply_text('Choose your age:', reply_markup=get_age_buttons())
+
+def handle_age(update: Update, context: CallbackContext):
+    global age
+    age = update.callback_query.data
+    update.callback_query.message.edit_text('Choose your skin type:', reply_markup=get_skin_type_buttons())
+
+def handle_skin_type(update: Update, context: CallbackContext):
+    global skin_type
+    skin_type = update.callback_query.data
+    if skin_type == 'normal':
+        update.callback_query.message.edit_text('Choose your skin subtype:', reply_markup=get_skin_subtype_buttons())
+    else:
+        update.callback_query.message.edit_text('Thank you for your input!')
+
+def handle_skin_subtype(update: Update, context: CallbackContext):
+    global skin_subtype
+    skin_subtype = update.callback_query.data
+    update.callback_query.message.edit_text('Thank you for your input!')
+
+    # Print all user responses
+    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}')
+
+def get_age_buttons():
+    keyboard = [
+        [InlineKeyboardButton("13-19", callback_data='13-19')],
+        [InlineKeyboardButton("20-30", callback_data='20-30')],
+        [InlineKeyboardButton("31-50", callback_data='31-50')],
+        [InlineKeyboardButton("51 and older", callback_data='51+')]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+def get_skin_type_buttons():
+    keyboard = [
+        [InlineKeyboardButton("Normal", callback_data='normal')],
+        [InlineKeyboardButton("Dry", callback_data='dry')],
+        [InlineKeyboardButton("Oily", callback_data='oily')],
+        [InlineKeyboardButton("Combination", callback_data='combination')]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+def get_skin_subtype_buttons():
+    keyboard = [
+        [InlineKeyboardButton("Normal with wrinkles", callback_data='normal_wrinkles')],
+        [InlineKeyboardButton("Normal and sensitive", callback_data='normal_sensitive')]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
 
 
 # Model creation and training
@@ -57,6 +120,39 @@ def handle_photo(update: Update, context: CallbackContext):
 
     update.message.reply_text(f'The predicted skin type is: {skin_type}')
 
+
+# Main function
+def main():
+    global model, class_indices
+    try:
+        model, class_indices = load_model()
+    except ValueError as e:
+        logging.error(f"Error: {e}")
+        return
+
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+
+    api_token = '6248741319:AAFGMjQAokh679_lM4PQjwe5xpp2ohgSvco'
+
+    updater = Updater(api_token)
+
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
+    dp.add_handler(CallbackQueryHandler(handle_age, pattern='^\\d+-\\d+$'))
+    dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combination)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skin_subtype, pattern='^(normal_wrinkles|normal_sensitive)$'))
+
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
+
+
+
 # def test(image_path: str):
 #     img = Image.open(image_path)
 #     img = img.convert('RGB')
@@ -73,32 +169,7 @@ def handle_photo(update: Update, context: CallbackContext):
 #
 #     return skin_type
 
-# Main function
-def main():
-    global model, class_indices
-    try:
-        model, class_indices = load_model()
-    except ValueError as e:
-        logging.error(f"Error: {e}")
-        return
-
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger(__name__)
-
     # image_path = "dry(377).jpg"
     # skin_type = test(image_path)
     # print(skin_type)
     # Replace with your API token
-    api_token = '6248741319:AAFGMjQAokh679_lM4PQjwe5xpp2ohgSvco'
-
-    updater = Updater(api_token)
-
-    dp = updater.dispatcher
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
-
-    updater.start_polling()
-    updater.idle()
-
-if __name__ == '__main__':
-    main()
