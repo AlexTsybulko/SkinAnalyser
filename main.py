@@ -3,11 +3,8 @@ import logging
 import numpy as np
 from io import BytesIO
 from PIL import Image
-# from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
-# from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
-
 import tensorflow as tf
 
 # Define constants
@@ -16,37 +13,21 @@ BATCH_SIZE = 32
 NUM_CLASSES = 2  # Number of skin types
 EPOCHS = 50
 
-
 # Model creation and training
-def create_and_train_model():
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 3)),
-        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
-        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
-        tf.keras.layers.Dense(NUM_CLASSES, activation='softmax')
-    ])
+def load_model():
+    global model, class_indices
 
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    if os.path.exists('skin_type_classifier.h5'):
+        model = tf.keras.models.load_model('skin_type_classifier.h5')
+        class_indices = {0: 'dry', 1: 'oily'}  # Update with your skin types
+    else:
+        raise ValueError("Model file not found.")
 
-    train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255, validation_split=0.2)
-    train_data = train_datagen.flow_from_directory('./skin-dataset', target_size=(IMG_SIZE, IMG_SIZE),
-                                                   batch_size=BATCH_SIZE, class_mode='categorical', subset='training')
-    val_data = train_datagen.flow_from_directory('./skin-dataset', target_size=(IMG_SIZE, IMG_SIZE),
-                                                 batch_size=BATCH_SIZE, class_mode='categorical', subset='validation')
-
-    history = model.fit(train_data, validation_data=val_data, epochs=EPOCHS)
-
-    return model, train_data.class_indices
-
+    return model, class_indices
 
 # Telegram bot handlers
 def start(update: Update, context: CallbackContext):
     update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
-
 
 def handle_photo(update: Update, context: CallbackContext):
     photo = update.message.photo[-1]
@@ -68,17 +49,14 @@ def handle_photo(update: Update, context: CallbackContext):
 
     update.message.reply_text(f'The predicted skin type is: {skin_type}')
 
-
 # Main function
 def main():
     global model, class_indices
-
-    if os.path.exists('skin_type_classifier.h5'):
-        model = tf.keras.models.load_model('skin_type_classifier.h5')
-        class_indices = {0: 'dry', 1: 'oily'}  # Update with your skin types
-    else:
-        model, class_indices = create_and_train_model()
-        model.save('skin_type_classifier.h5')
+    try:
+        model, class_indices = load_model()
+    except ValueError as e:
+        logging.error(f"Error: {e}")
+        return
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)
@@ -94,30 +72,6 @@ def main():
 
     updater.start_polling()
     updater.idle()
-
-# def test_local_image(image_path):
-#     global model, class_indices
-#     model = create_and_train_model()
-#     # Load and preprocess the image
-#     img = Image.open(image_path)
-#     img = img.resize((IMG_SIZE, IMG_SIZE))
-#     img_array = np.array(img) / 255.0
-#     img_array = np.expand_dims(img_array, axis=0)
-#
-#     # Make a prediction using the model
-#     predictions = model.predict(img_array)
-#     predicted_class = np.argmax(predictions, axis=1)
-#
-#     # Print the results
-#     print(f"Predicted skin type: {class_indices[predicted_class[0]]}")
-
-
-# def main():
-#     # ... (rest of the main function code)
-#
-#     # Call the test function with a local image path
-#     test_image_path = 'skin-dataset/dry/dry(1).JPG'
-#     test_local_image(test_image_path)
 
 if __name__ == '__main__':
     main()
