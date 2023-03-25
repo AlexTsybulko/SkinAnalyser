@@ -179,6 +179,7 @@ def main():
     dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
     dp.add_handler(CallbackQueryHandler(handle_age, pattern='^\\d+-\\d+$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skin_condition()))
     # dp.add_handler(CallbackQueryHandler(handle_skin_subtype, pattern='^(normal_wrinkles|normal_sensitive)$'))
 
 
