@@ -383,7 +383,7 @@ def get_face_care_category_buttons():
 
 def get_cleaning_buttons():
     keyboard = [
-        [InlineKeyboardButton("Makeup removers\nThese products are\ndesigned to gently\nremove makeup", callback_data='Makeup removers')],
+        [InlineKeyboardButton("Makeup removers", callback_data='Makeup removers')],
         [InlineKeyboardButton("Cleansing products", callback_data='Cleansing products')],
         [InlineKeyboardButton("Exfoliating products", callback_data='Exfoliating products')],
         [InlineKeyboardButton("Skip", callback_data='skip')],
