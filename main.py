@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from io import BytesIO
 from PIL import Image
-from telegram import Update
+from telegram import Update, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
 import tensorflow as tf
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -22,11 +22,13 @@ EPOCHS = 50
 skin_type = ''
 skin_subtype = ''
 age = ''
+skincare_brand_exact = ''
+skincare_segment = ''
+skincare_brand = ''
 # global age
 
 # Handler functions for different stages of the conversation
 def start(update: Update, context: CallbackContext):
-    # age = ''
     update.message.reply_text('Choose your age:', reply_markup=get_age_buttons())
     # update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
 
@@ -63,26 +65,23 @@ def handle_skin_condition(update: Update, context: CallbackContext):
 
 
 def handle_skincare_brand(update: Update, context: CallbackContext):
-    global skincare_brand
     skincare_brand = update.callback_query.data
     if skincare_brand == 'enter_own':
         update.callback_query.message.reply_text('Enter your own skincare brand:')
+    elif skincare_brand == 'skip':
+        update.callback_query.message.edit_text('Skincare brand choice skipped')
+        update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
     else:
         update.callback_query.message.edit_text('Choose skincare brand segment:', reply_markup=get_skincare_segment_buttons())
 
 def handle_skincare_brand_exact(update: Update, context: CallbackContext):
     global skincare_brand_exact
     skincare_brand_exact = update.callback_query.data
-    # if skincare_brand == 'enter_own':
-    #     update.callback_query.message.reply_text('Enter your own skincare brand:')
-    # else:
-    #     update.callback_query.message.edit_text('Choose skincare brand segment:', reply_markup=get_skincare_segment_buttons())
     update.callback_query.message.edit_text(
             f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare exact brand: {skincare_brand_exact}')
 
 
 def handle_skincare_segment(update: Update, context: CallbackContext):
-    global skincare_segment
     skincare_segment = update.callback_query.data
     if skincare_segment == 'luxury':
         update.callback_query.message.edit_text('Choose a luxury skincare brand:', reply_markup=get_luxury_skincare_buttons())
@@ -101,11 +100,34 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
 def handle_custom_skincare_brand(update: Update, context: CallbackContext):
     global skincare_brand
     skincare_brand = update.message.text
-    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
+
+def handle_face_care(update: Update, context: CallbackContext):
+    global face_care_category
+    face_care_category = update.message.text
+    if face_care_category == 'Cleaning':
+        update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=get_cleaning_buttons())
+    # elif face_care_category == 'Tonifying':
+    #     update.callback_query.message.edit_text('Choose a type of tonifying product:', reply_markup=get_tonifying_buttons())
+    # elif face_care_category == 'Moisturizing':
+    #     update.callback_query.message.edit_text('Choose a type of moisturizing product:', reply_markup=get_moisturizing_buttons())
+    # elif face_care_category == 'Masks':
+    #     update.callback_query.message.edit_text('Choose a type of mask:', reply_markup=get_masks_buttons())
+    # elif face_care_category == 'Sun protection':
+    #     update.callback_query.message.edit_text('Choose a type of sun protection product:', reply_markup=get_sun_protection_buttons())
+    elif face_care_category == 'Skip':
+        update.callback_query.message.edit_text('Thank you for your input!')
+        update.message.reply_text(
+            f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
+
+    else:
+        update.callback_query.message.edit_text('Sorry, I didn\'t understand your input. Please try again.')
+
+
 def get_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Enter my own", callback_data='enter_own')],
         [InlineKeyboardButton("Choose from list", callback_data='choose_from_list')]
+        [InlineKeyboardButton("Skip", callback_data='skip')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -116,6 +138,25 @@ def get_skincare_segment_buttons():
         [InlineKeyboardButton("Mass market", callback_data='mass_market')],
         [InlineKeyboardButton("Russian", callback_data='russian')],
         [InlineKeyboardButton("Drugstore", callback_data='drugstore')],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+def get_age_buttons():
+    keyboard = [
+        [InlineKeyboardButton("13-19", callback_data='13-19')],
+        [InlineKeyboardButton("20-30", callback_data='20-30')],
+        [InlineKeyboardButton("31-50", callback_data='31-50')],
+        [InlineKeyboardButton("51-9999", callback_data='51-9999')]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+def get_skin_type_buttons():
+    keyboard = [
+        [InlineKeyboardButton("Normal", callback_data='normal')],
+        [InlineKeyboardButton("Dry", callback_data='dry')],
+        [InlineKeyboardButton("Oily", callback_data='oily')],
+        [InlineKeyboardButton("Combined", callback_data='combined')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -150,26 +191,6 @@ def get_skin_condition_buttons(skin_type):
         ]
 
     return InlineKeyboardMarkup(buttons)
-
-
-def get_age_buttons():
-    keyboard = [
-        [InlineKeyboardButton("13-19", callback_data='13-19')],
-        [InlineKeyboardButton("20-30", callback_data='20-30')],
-        [InlineKeyboardButton("31-50", callback_data='31-50')],
-        [InlineKeyboardButton("51-9999", callback_data='51-9999')]
-    ]
-    return InlineKeyboardMarkup(keyboard)
-
-def get_skin_type_buttons():
-    keyboard = [
-        [InlineKeyboardButton("Normal", callback_data='normal')],
-        [InlineKeyboardButton("Dry", callback_data='dry')],
-        [InlineKeyboardButton("Oily", callback_data='oily')],
-        [InlineKeyboardButton("Combined", callback_data='combined')]
-    ]
-    return InlineKeyboardMarkup(keyboard)
-
 
 def get_luxury_skincare_buttons():
     keyboard = [
@@ -324,6 +345,39 @@ def get_drugstore_skincare_buttons():
     ]
     return InlineKeyboardMarkup(keyboard)
 
+
+def get_face_care_category_buttons():
+    keyboard = [
+        [InlineKeyboardButton("Cleaning", callback_data='Cleaning')],
+        [InlineKeyboardButton("Tonifying", callback_data='Tonifying')],
+        [InlineKeyboardButton("Moisturizing", callback_data='Moisturizing')],
+        [InlineKeyboardButton("Masks", callback_data='Masks')],
+        [InlineKeyboardButton("Sun protection", callback_data='Sun protection')],
+        [InlineKeyboardButton("Skip", callback_data='Skip')],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+def get_cleaning_buttons():
+    keyboard = [
+        [InlineKeyboardButton("Makeup removers", callback_data='Makeup removers')],
+        [InlineKeyboardButton("Cleansing products", callback_data='Cleansing products')],
+        [InlineKeyboardButton("Exfoliating products", callback_data='Exfoliating products')],
+        [InlineKeyboardButton("Skip", callback_data='Skip')],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+def handle_cleaning(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    query.edit_message_text(
+        text=f"Great! Let's talk about cleaning.\n\nWhat type of cleaning product are you interested in?\n\n"
+             f"<b>Makeup removers</b>: These products are designed to gently remove makeup, dirt and impurities from the skin. Examples are micellar water, cleansing balms and makeup remover wipes.\n\n"
+             f"<b>Cleansing products</b>: Cleansers help remove dirt, grease, and makeup from the surface of the skin. There are different types of cleansers, such as foaming cleansers, gel cleansers, cream cleansers, and oil cleansers, which are suitable for different skin types.\n\n"
+             f"<b>Exfoliating products</b>: These products help remove dead skin cells, clog pores, and promote skin cell renewal. There are both physical exfoliants (scrubs) and chemical exfoliants (e.g., alpha-hydroxy acids and beta-hydroxy acids).\n\n",
+        parse_mode=ParseMode.HTML,
+        reply_markup=get_cleaning_buttons()
+    )
 
 # Model creation and training
 def load_model():
