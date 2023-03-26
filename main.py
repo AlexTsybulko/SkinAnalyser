@@ -113,7 +113,7 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
 def handle_custom_skincare_brand(update: Update, context: CallbackContext):
     global skincare_brand
     skincare_brand = update.message.text
-    update.callback_query.message.edit_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
+    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
 def get_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Enter my own", callback_data='enter_own')],
