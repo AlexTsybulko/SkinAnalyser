@@ -102,8 +102,8 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
 
-    update.callback_query.message.edit_text(f'{skincare_segment} chosen. {brands}')
-
+    update.callback_query.message.edit_text(f'{skincare_segment} chosen. {brands}\n will be used for search')
+    update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
 def handle_skincare_brand_exact(update: Update, context: CallbackContext):
     global skincare_brand_exact
     skincare_brand_exact = update.callback_query.data
