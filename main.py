@@ -25,6 +25,7 @@ age = ''
 skincare_brand_exact = ''
 skincare_segment = ''
 skincare_brand = ''
+face_care_category = ''
 # global age
 
 # Handler functions for different stages of the conversation
