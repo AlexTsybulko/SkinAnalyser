@@ -107,7 +107,7 @@ def handle_face_care(update: Update, context: CallbackContext):
     global face_care_category
     face_care_category = update.callback_query.data
     if face_care_category == 'Cleaning':
-        update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=get_cleaning_buttons())
+        update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=handle_cleaning())
     # elif face_care_category == 'Tonifying':
     #     update.callback_query.message.edit_text('Choose a type of tonifying product:', reply_markup=get_tonifying_buttons())
     # elif face_care_category == 'Moisturizing':
@@ -118,12 +118,12 @@ def handle_face_care(update: Update, context: CallbackContext):
     #     update.callback_query.message.edit_text('Choose a type of sun protection product:', reply_markup=get_sun_protection_buttons())
     elif face_care_category == 'skip':
         update.callback_query.message.edit_text('Thank you for your input!')
-        update.message.reply_text(
-            f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
-
     else:
         update.callback_query.message.edit_text('Sorry, I didn\'t understand your input. Please try again.')
 
+def handle_skip(update: Update, context: CallbackContext):
+    update.message.reply_text(
+        f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
 
 def get_skincare_buttons():
     keyboard = [
@@ -443,9 +443,10 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^\w+\s\+\s\w+$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^(luxury|mid-priced|mass_market|russian|drugstore)$'))
-    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list|enter_own|skip)$'))
-    dp.add_handler(CallbackQueryHandler(handle_face_care, pattern='^(Cleaning|Tonifying|Moisturizing|Masks|Sun protection|skip)$'))
-    dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Makeup removers|Cleansing products|Exfoliating products|skip)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list|enter_own)$'))
+    dp.add_handler(CallbackQueryHandler(handle_face_care, pattern='^(Cleaning|Tonifying|Moisturizing|Masks|Sun protection)$'))
+    dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Makeup removers|Cleansing products|Exfoliating products)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skip(), pattern='^(skip)$'))
     with open('skincare_brands.txt') as f:
         brands = [line.strip() for line in f]
     pattern = f'^({"|".join(brands + ["enter_my_own"])})$'
