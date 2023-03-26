@@ -25,7 +25,7 @@ skin_subtype = ''
 
 # Handler functions for different stages of the conversation
 def start(update: Update, context: CallbackContext):
-    update.message.reply_text('Choose your age:', reply_markup=get_age_buttons())
+    update.callback_query.message.edit_text('Choose your age:', reply_markup=get_age_buttons())
     # update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
 
 
@@ -91,10 +91,10 @@ def get_skin_condition_buttons(skin_type):
 
 def get_age_buttons():
     keyboard = [
-        [InlineKeyboardButton("51 and older", callback_data='51 and older')]
         [InlineKeyboardButton("13-19", callback_data='13-19')],
         [InlineKeyboardButton("20-30", callback_data='20-30')],
         [InlineKeyboardButton("31-50", callback_data='31-50')],
+        [InlineKeyboardButton("51 and older", callback_data='51 and older')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
