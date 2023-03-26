@@ -107,7 +107,7 @@ def handle_face_care(update: Update, context: CallbackContext):
     global face_care_category
     face_care_category = update.callback_query.data
     if face_care_category == 'Cleaning':
-        update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=handle_cleaning())
+        update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=handle_cleaning(update, context))
     # elif face_care_category == 'Tonifying':
     #     update.callback_query.message.edit_text('Choose a type of tonifying product:', reply_markup=get_tonifying_buttons())
     # elif face_care_category == 'Moisturizing':
