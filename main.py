@@ -122,8 +122,8 @@ def handle_face_care(update: Update, context: CallbackContext):
         update.callback_query.message.edit_text('Sorry, I didn\'t understand your input. Please try again.')
 
 def handle_skip(update: Update, context: CallbackContext):
-    update.message.reply_text(
-        f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
+    update.callback_query.message.edit_text(
+        f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}\nYour skincare brand: {face_care_category}')
 
 def get_skincare_buttons():
     keyboard = [
