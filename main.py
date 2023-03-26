@@ -113,7 +113,7 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
 def handle_custom_skincare_brand(update: Update, context: CallbackContext):
     global skincare_brand
     skincare_brand = update.message.text
-    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
+    update.callback_query.message.edit_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
 def get_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Enter my own", callback_data='enter_own')],
@@ -399,7 +399,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^\w+\s\+\s\w+$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^(luxury|mid-priced|mass_market|russian|drugstore)$'))
-    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list|enter_own)$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_brand_exact, pattern='^(La Mer|La Prairie|Sisley Paris|SK-II|Clé de Peau Beauté|Guerlain|Chanel|Dior|Estée Lauder|Lancôme|Chantecaille|AmorePacific|111SKIN|Valmont|ReVive|Augustinus Bader|Omorovicza|Tata Harper|Dr. Barbara Sturm|Charlotte Tilbury|Yves Saint Laurent|Givenchy|Shiseido|Tom Ford Beauty|Natura Bissé|3LAB|Zelens|Kanebo|Sulwhasoo|RéVive|Sisley Paris|SK-II|Charlotte Tilbury|Elemis|Natura Bissé|Kate Somerville|Clinique|La Roche-Posay|Vichy|Avene|Bioderma|Kiehl\'s|Dermalogica | DrunkElephant | Tatcha | Murad | Ole Henriksen | Sunday Riley | StriVectin | Origins | Elizabeth Arden | First Aid Beauty | Philosophy | Dr.Hauschka | Dr.Jart\+ | Peter Thomas Roth | Dr.Dennis Gross | REN Clean Skincare | Hada Labo | RoC | Eucerin | Cosrx | Clarins | Fresh | Neutrogena | CeraVe | L\'Oréal Paris|Olay|Nivea|Garnier|Cetaphil|The Ordinary|Paula\'s Choice|The Body Shop|PIXI|Mario Badescu|Shik|Natura Siberica|Planeta Organica|Green Mama|BioBeauty|Organic Shop|SIBERINA|White Agafia|7 Notes of Beauty|Home Doctor|Floresan|Vitex|VooDoo|Chistaya Liniya|Eveline Cosmetics|Black Pearl|100 Recipes of Beauty|Pure Line|Granny Agafia\'s Recipes|DNC \(Do Not Change\)|Belita-Vitex|enter_my_own)$'))
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_custom_skincare_brand))
     updater.start_polling()
