@@ -91,10 +91,10 @@ def get_skin_condition_buttons(skin_type):
 
 def get_age_buttons():
     keyboard = [
+        [InlineKeyboardButton("51 and older", callback_data='51 and older')]
         [InlineKeyboardButton("13-19", callback_data='13-19')],
         [InlineKeyboardButton("20-30", callback_data='20-30')],
         [InlineKeyboardButton("31-50", callback_data='31-50')],
-        [InlineKeyboardButton("51 and older", callback_data='51 and older')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
