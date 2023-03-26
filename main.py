@@ -57,7 +57,7 @@ def handle_skin_condition(update: Update, context: CallbackContext):
     global skin_subtype
     skin_subtype = update.callback_query.data
     update.callback_query.message.edit_text('Thank you for your input!')
-    update.callback_query.message.reply_text('Find skincare brand:', reply_markup=get_skincare_buttons())
+    # update.callback_query.message.reply_text('Find skincare brand:', reply_markup=get_skincare_buttons())
     # update.callback_query.message.edit_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}')
 
 
@@ -384,9 +384,9 @@ def main():
     dp.add_handler(MessageHandler(filters.Filters.photo, handle_photo))
     dp.add_handler(CallbackQueryHandler(handle_age, pattern='^\\d+-\\d+$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
-    dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^.*$'))
-    dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^.*$'))
-    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^.*$'))
+    dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^\w+\s\+\s\w+$'))
+    dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^(luxury|mid-priced|mass_market|russian|drugstore)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(enter_own|choose_from_list)$'))
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_custom_skincare_brand))
     updater.start_polling()
     updater.idle()
