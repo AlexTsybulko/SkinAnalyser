@@ -102,8 +102,21 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
 
-    update.callback_query.message.edit_text(f'{skincare_segment} chosen. {brands}\n will be used for search')
-    update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
+    # update.callback_query.message.edit_text(f'{skincare_segment} chosen. {brands}\n will be used for search')
+    # update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
+
+    query = update.callback_query
+
+    # Update message to indicate skincare segment has been chosen
+    query.edit_message_text(f'{skincare_segment} chosen. {brands}\n will be used for search')
+
+    # Send a new message to prompt for face care category
+    context.bot.send_message(
+        chat_id=query.message.chat_id,
+        text='Choose face care category:',
+        reply_markup=get_face_care_category_buttons()
+    )
+
 def handle_skincare_brand_exact(update: Update, context: CallbackContext):
     global skincare_brand_exact
     skincare_brand_exact = update.callback_query.data
@@ -370,7 +383,7 @@ def get_face_care_category_buttons():
 
 def get_cleaning_buttons():
     keyboard = [
-        [InlineKeyboardButton("Makeup removers\nThese products are designed to gently remove makeup", callback_data='Makeup removers')],
+        [InlineKeyboardButton("Makeup removers\nThese products are\ndesigned to gently\nremove makeup", callback_data='Makeup removers')],
         [InlineKeyboardButton("Cleansing products", callback_data='Cleansing products')],
         [InlineKeyboardButton("Exfoliating products", callback_data='Exfoliating products')],
         [InlineKeyboardButton("Skip", callback_data='skip')],
