@@ -444,6 +444,8 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^\w+\s\+\s\w+$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^(luxury|mid-priced|mass_market|russian|drugstore)$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list|enter_own|skip)$'))
+    dp.add_handler(CallbackQueryHandler(handle_face_care, pattern='^(Cleaning|Tonifying|Moisturizing|Masks|Sun protection|Skip)$'))
+    dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Makeup removers|Cleansing products|Exfoliating products|Skip)$'))
     with open('skincare_brands.txt') as f:
         brands = [line.strip() for line in f]
     pattern = f'^({"|".join(brands + ["enter_my_own"])})$'
