@@ -126,7 +126,7 @@ def handle_face_care(update: Update, context: CallbackContext):
 def get_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Enter my own", callback_data='enter_own')],
-        [InlineKeyboardButton("Choose from list", callback_data='choose_from_list')]
+        [InlineKeyboardButton("Choose from list", callback_data='choose_from_list')],
         [InlineKeyboardButton("Skip", callback_data='skip')]
     ]
     return InlineKeyboardMarkup(keyboard)
