@@ -50,13 +50,14 @@ def handle_skin_type(update: Update, context: CallbackContext):
         update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
-    update.callback_query.message.reply_text('Find skincare brand:', reply_markup=get_skincare_buttons())
+
 
 
 def handle_skin_condition(update: Update, context: CallbackContext):
     global skin_subtype
     skin_subtype = update.callback_query.data
-    update.callback_query.message.edit_text('Thank you for your input!')
+    # update.callback_query.message.edit_text('Thank you for your input!')
+    update.callback_query.message.reply_text('Find skincare brand:', reply_markup=get_skincare_buttons())
     # update.callback_query.message.reply_text('Find skincare brand:', reply_markup=get_skincare_buttons())
     # update.callback_query.message.edit_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}')
 
@@ -70,6 +71,18 @@ def handle_skincare_brand(update: Update, context: CallbackContext):
         update.callback_query.message.edit_text('Choose skincare brand segment:', reply_markup=get_skincare_segment_buttons())
         update.message.reply_text(
             f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
+
+
+def handle_skincare_brand_exact(update: Update, context: CallbackContext):
+    global skincare_brand_exact
+    skincare_brand = update.callback_query.data
+    # if skincare_brand == 'enter_own':
+    #     update.callback_query.message.reply_text('Enter your own skincare brand:')
+    # else:
+    #     update.callback_query.message.edit_text('Choose skincare brand segment:', reply_markup=get_skincare_segment_buttons())
+    update.message.reply_text(
+            f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}\nYour skincare exact brand: {skincare_brand_exact}')
+
 
 def handle_skincare_segment(update: Update, context: CallbackContext):
     global skincare_segment
@@ -387,6 +400,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^\w+\s\+\s\w+$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^(luxury|mid-priced|mass_market|russian|drugstore)$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(enter_own|choose_from_list)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skincare_brand_exact(), pattern='^(La Mer|La Prairie|Sisley Paris|SK-II|Clé de Peau Beauté|Guerlain|Chanel|Dior|Estée Lauder|Lancôme|Chantecaille|AmorePacific|111SKIN|Valmont|ReVive|Augustinus Bader|Omorovicza|Tata Harper|Dr. Barbara Sturm|Charlotte Tilbury|Yves Saint Laurent|Givenchy|Shiseido|Tom Ford Beauty|Natura Bissé|3LAB|Zelens|Kanebo|Sulwhasoo|RéVive|Sisley Paris|SK-II|Charlotte Tilbury|Elemis|Natura Bissé|Kate Somerville|Clinique|La Roche-Posay|Vichy|Avene|Bioderma|Kiehl\'s|Dermalogica | DrunkElephant | Tatcha | Murad | Ole Henriksen | Sunday Riley | StriVectin | Origins | Elizabeth Arden | First Aid Beauty | Philosophy | Dr.Hauschka | Dr.Jart\+ | Peter Thomas Roth | Dr.Dennis Gross | REN Clean Skincare | Hada Labo | RoC | Eucerin | Cosrx | Clarins | Fresh | Neutrogena | CeraVe | L\'Oréal Paris|Olay|Nivea|Garnier|Cetaphil|The Ordinary|Paula\'s Choice|The Body Shop|PIXI|Mario Badescu|Shik|Natura Siberica|Planeta Organica|Green Mama|BioBeauty|Organic Shop|SIBERINA|White Agafia|7 Notes of Beauty|Home Doctor|Floresan|Vitex|VooDoo|Chistaya Liniya|Eveline Cosmetics|Black Pearl|100 Recipes of Beauty|Pure Line|Granny Agafia\'s Recipes|DNC \(Do Not Change\)|Belita-Vitex|enter_my_own)$'))
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_custom_skincare_brand))
     updater.start_polling()
     updater.idle()
