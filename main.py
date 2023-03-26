@@ -22,9 +22,10 @@ EPOCHS = 50
 skin_type = ''
 skin_subtype = ''
 age = ''
-skincare_brand_exact = ''
-skincare_segment = ''
 skincare_brand = ''
+skincare_brand_manual = ''
+skincare_segment = ''
+brands = ''
 face_care_category = ''
 # global age
 
@@ -70,10 +71,38 @@ def handle_skincare_brand(update: Update, context: CallbackContext):
     if skincare_brand == 'enter_own':
         update.callback_query.message.reply_text('Enter your own skincare brand:')
     elif skincare_brand == 'skip':
-        update.callback_query.message.edit_text('Skincare brand choice skipped')
+        update.callback_query.message.reply_text('Skincare brand choice skipped')
         update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
     else:
         update.callback_query.message.edit_text('Choose skincare brand segment:', reply_markup=get_skincare_segment_buttons())
+
+def get_brands_from_file(file_path):
+    with open(file_path, 'r') as f:
+        brands = [line.strip() for line in f if line.strip()]
+    return "Brands:\n" + "\n".join(brands)
+def handle_skincare_segment(update: Update, context: CallbackContext):
+    skincare_segment = update.callback_query.data
+    luxury_brand_file_path = "skincare_luxury_brands.txt"
+    midpriced_brand_file_path = "midpriced_luxury_brands.txt"
+    massmarket_brand_file_path = "massmarket_luxury_brands.txt"
+    russian_brand_file_path = "russian_luxury_brands.txt"
+    drugstore_brand_file_path = "drugstore_luxury_brands.txt"
+
+    brands = ""
+    if skincare_segment == 'luxury':
+        brands = get_brands_from_file(luxury_brand_file_path)
+    elif skincare_segment == 'mid-priced':
+        brands = get_brands_from_file(midpriced_brand_file_path)
+    elif skincare_segment == 'mass_market':
+        brands = get_brands_from_file(massmarket_brand_file_path)
+    elif skincare_segment == 'russian':
+        brands = get_brands_from_file(russian_brand_file_path)
+    elif skincare_segment == 'drugstore':
+        brands = get_brands_from_file(drugstore_brand_file_path)
+    else:
+        update.callback_query.message.edit_text('Thank you for your input!')
+
+    update.callback_query.message.edit_text(f'{skincare_segment} chosen. {brands}')
 
 def handle_skincare_brand_exact(update: Update, context: CallbackContext):
     global skincare_brand_exact
@@ -83,32 +112,17 @@ def handle_skincare_brand_exact(update: Update, context: CallbackContext):
     #         f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare exact brand: {skincare_brand_exact}')
 
 
-def handle_skincare_segment(update: Update, context: CallbackContext):
-    skincare_segment = update.callback_query.data
-    if skincare_segment == 'luxury':
-        update.callback_query.message.edit_text('Choose a luxury skincare brand:', reply_markup=get_luxury_skincare_buttons())
-    elif skincare_segment == 'mid-priced':
-        update.callback_query.message.edit_text('Choose a mid-priced skincare brand:', reply_markup=get_midpriced_skincare_buttons())
-    elif skincare_segment == 'mass_market':
-        update.callback_query.message.edit_text('Choose a mass market skincare brand:', reply_markup=get_massmarket_skincare_buttons())
-    elif skincare_segment == 'russian':
-        update.callback_query.message.edit_text('Choose a Russian skincare brand:', reply_markup=get_russian_skincare_buttons())
-    elif skincare_segment == 'drugstore':
-        update.callback_query.message.edit_text('Choose a drugstore skincare brand:', reply_markup=get_drugstore_skincare_buttons())
-    else:
-        update.callback_query.message.edit_text('Thank you for your input!')
-
 
 def handle_custom_skincare_brand(update: Update, context: CallbackContext):
-    global skincare_brand
-    skincare_brand = update.message.text
+    global skincare_brand_manual
+    skincare_brand_manual = update.message.text
     update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
 
 def handle_face_care(update: Update, context: CallbackContext):
     global face_care_category
     face_care_category = update.callback_query.data
-    # if face_care_category == 'Cleaning':
-    #     update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=handle_cleaning(update, context))
+    if face_care_category == 'Cleaning':
+        update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=handle_cleaning(update, context))
     # elif face_care_category == 'Tonifying':
     #     update.callback_query.message.edit_text('Choose a type of tonifying product:', reply_markup=get_tonifying_buttons())
     # elif face_care_category == 'Moisturizing':
@@ -124,7 +138,7 @@ def handle_face_care(update: Update, context: CallbackContext):
 
 def handle_skip(update: Update, context: CallbackContext):
     update.callback_query.message.edit_text(
-        f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}\nYour skincare brand: {face_care_category}')
+        f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand_manual}Your skincare brands list: {brands}\n\nYour face care category: {face_care_category}')
 
 def get_skincare_buttons():
     keyboard = [
@@ -195,6 +209,7 @@ def get_skin_condition_buttons(skin_type):
 
     return InlineKeyboardMarkup(buttons)
 
+
 def get_luxury_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("La Mer", callback_data='La Mer')],
@@ -235,8 +250,6 @@ def get_luxury_skincare_buttons():
         [InlineKeyboardButton("Kate Somerville", callback_data='Kate Somerville')]
     ]
     return InlineKeyboardMarkup(keyboard)
-
-
 def get_midpriced_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Clinique", callback_data='Clinique')],
@@ -269,8 +282,6 @@ def get_midpriced_skincare_buttons():
         [InlineKeyboardButton("Fresh", callback_data='Fresh')]
     ]
     return InlineKeyboardMarkup(keyboard)
-
-
 def get_massmarket_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Neutrogena", callback_data='Neutrogena')],
@@ -295,8 +306,6 @@ def get_massmarket_skincare_buttons():
         [InlineKeyboardButton("RoC", callback_data='RoC')],
     ]
     return InlineKeyboardMarkup(keyboard)
-
-
 def get_russian_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Shik", callback_data='Shik')],
@@ -321,8 +330,6 @@ def get_russian_skincare_buttons():
         [InlineKeyboardButton("DNC (Do Not Change)", callback_data='DNC (Do Not Change)')]
     ]
     return InlineKeyboardMarkup(keyboard)
-
-
 def get_drugstore_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Neutrogena", callback_data='Neutrogena')],
@@ -363,7 +370,7 @@ def get_face_care_category_buttons():
 
 def get_cleaning_buttons():
     keyboard = [
-        [InlineKeyboardButton("Makeup removers", callback_data='Makeup removers')],
+        [InlineKeyboardButton("Makeup removers\nThese products are designed to gently remove makeup", callback_data='Makeup removers')],
         [InlineKeyboardButton("Cleansing products", callback_data='Cleansing products')],
         [InlineKeyboardButton("Exfoliating products", callback_data='Exfoliating products')],
         [InlineKeyboardButton("Skip", callback_data='skip')],
@@ -449,7 +456,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Cleaning)$'))
     # dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Makeup removers|Cleansing products|Exfoliating products)$'))
     dp.add_handler(CallbackQueryHandler(handle_skip, pattern='^(skip)$'))
-    with open('skincare_brands.txt') as f:
+    with open('skincare_luxury_brands.txt') as f:
         brands = [line.strip() for line in f]
     pattern = f'^({"|".join(brands + ["enter_my_own"])})$'
     dp.add_handler(CallbackQueryHandler(handle_skincare_brand_exact, pattern=pattern))
