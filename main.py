@@ -50,7 +50,7 @@ def handle_skin_type(update: Update, context: CallbackContext):
         update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
-        update.callback_query.message.reply_text('Find skincare brand:', reply_markup=get_skincare_buttons())
+    update.callback_query.message.reply_text('Find skincare brand:', reply_markup=get_skincare_buttons())
 
 
 def handle_skin_condition(update: Update, context: CallbackContext):
@@ -68,7 +68,8 @@ def handle_skincare_brand(update: Update, context: CallbackContext):
         update.callback_query.message.reply_text('Enter your own skincare brand:')
     else:
         update.callback_query.message.edit_text('Choose skincare brand segment:', reply_markup=get_skincare_segment_buttons())
-
+        update.message.reply_text(
+            f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
 
 def handle_skincare_segment(update: Update, context: CallbackContext):
     global skincare_segment
@@ -99,8 +100,7 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
 def handle_custom_skincare_brand(update: Update, context: CallbackContext):
     global skincare_brand
     skincare_brand = update.message.text
-    update.message.reply_text(f'Thank you for your input!\n\nYour age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
-
+    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
 def get_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Enter my own", callback_data='enter_own')],
@@ -387,7 +387,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^.*$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^.*$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^.*$'))
-    dp.add_handler(CallbackQueryHandler(handle_custom_skincare_brand, pattern='^.*$'))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_custom_skincare_brand))
     updater.start_polling()
     updater.idle()
 
