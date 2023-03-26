@@ -96,7 +96,7 @@ def get_age_buttons():
         [InlineKeyboardButton("13-19", callback_data='13-19')],
         [InlineKeyboardButton("20-30", callback_data='20-30')],
         [InlineKeyboardButton("31-50", callback_data='31-50')],
-        [InlineKeyboardButton("51", callback_data='51')]
+        [InlineKeyboardButton("51-9999", callback_data='51-9999')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
