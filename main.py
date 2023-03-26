@@ -106,8 +106,8 @@ def handle_custom_skincare_brand(update: Update, context: CallbackContext):
 def handle_face_care(update: Update, context: CallbackContext):
     global face_care_category
     face_care_category = update.callback_query.data
-    if face_care_category == 'Cleaning':
-        update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=handle_cleaning(update, context))
+    # if face_care_category == 'Cleaning':
+    #     update.callback_query.message.edit_text('Choose a type of cleaning product:', reply_markup=handle_cleaning(update, context))
     # elif face_care_category == 'Tonifying':
     #     update.callback_query.message.edit_text('Choose a type of tonifying product:', reply_markup=get_tonifying_buttons())
     # elif face_care_category == 'Moisturizing':
@@ -116,7 +116,7 @@ def handle_face_care(update: Update, context: CallbackContext):
     #     update.callback_query.message.edit_text('Choose a type of mask:', reply_markup=get_masks_buttons())
     # elif face_care_category == 'Sun protection':
     #     update.callback_query.message.edit_text('Choose a type of sun protection product:', reply_markup=get_sun_protection_buttons())
-    elif face_care_category == 'skip':
+    if face_care_category == 'skip':
         update.callback_query.message.edit_text('Thank you for your input!')
     else:
         update.callback_query.message.edit_text('Sorry, I didn\'t understand your input. Please try again.')
@@ -444,8 +444,9 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^\w+\s\+\s\w+$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^(luxury|mid-priced|mass_market|russian|drugstore)$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list|enter_own)$'))
-    dp.add_handler(CallbackQueryHandler(handle_face_care, pattern='^(Cleaning|Tonifying|Moisturizing|Masks|Sun protection)$'))
-    dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Makeup removers|Cleansing products|Exfoliating products)$'))
+    dp.add_handler(CallbackQueryHandler(handle_face_care, pattern='^(Tonifying|Moisturizing|Masks|Sun protection)$'))
+    dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Cleaning)$'))
+    # dp.add_handler(CallbackQueryHandler(handle_cleaning, pattern='^(Makeup removers|Cleansing products|Exfoliating products)$'))
     dp.add_handler(CallbackQueryHandler(handle_skip, pattern='^(skip)$'))
     with open('skincare_brands.txt') as f:
         brands = [line.strip() for line in f]
