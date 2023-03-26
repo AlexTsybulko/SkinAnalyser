@@ -22,10 +22,12 @@ age = ''
 skin_type = ''
 skin_subtype = ''
 
+
 # Handler functions for different stages of the conversation
 def start(update: Update, context: CallbackContext):
     update.message.reply_text('Choose your age:', reply_markup=get_age_buttons())
     # update.message.reply_text('Send me a photo of the skin, and I will classify the skin type.')
+
 
 def handle_age(update: Update, context: CallbackContext):
     global age
@@ -78,20 +80,13 @@ def get_skin_condition_buttons(skin_type):
         ]
     elif skin_type == 'combined':
         buttons = [
-            [InlineKeyboardButton("Combinated + wrinkles", callback_data='Combinated + wrinkles')],
-            [InlineKeyboardButton("Combinated + rashy", callback_data='Combinated + rashy')],
-            [InlineKeyboardButton("Combinated + acne", callback_data='Combinated + acne')],
-            [InlineKeyboardButton("Combinated + sensitive", callback_data='Combinated + sensitive')]
+            [InlineKeyboardButton("Combined + wrinkles", callback_data='Combined + wrinkles')],
+            [InlineKeyboardButton("Combined + rashy", callback_data='Combined + rashy')],
+            [InlineKeyboardButton("Combined + acne", callback_data='Combined + acne')],
+            [InlineKeyboardButton("Combined + sensitive", callback_data='Combined + sensitive')]
         ]
 
     return InlineKeyboardMarkup(buttons)
-
-# def get_skin_subtype_buttons():
-#     keyboard = [
-#         [InlineKeyboardButton("Normal with wrinkles", callback_data='Normal with wrinkles')],
-#         [InlineKeyboardButton("Normal and sensitive", callback_data='Normal and sensitive')]
-#     ]
-#     return InlineKeyboardMarkup(keyboard)
 
 
 def get_age_buttons():
@@ -99,7 +94,7 @@ def get_age_buttons():
         [InlineKeyboardButton("13-19", callback_data='13-19')],
         [InlineKeyboardButton("20-30", callback_data='20-30')],
         [InlineKeyboardButton("31-50", callback_data='31-50')],
-        [InlineKeyboardButton("51 and older", callback_data='51+')]
+        [InlineKeyboardButton("51 and older", callback_data='51 and older')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -174,11 +169,9 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_age, pattern='^\\d+-\\d+$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^.*$'))
-    # dp.add_handler(CallbackQueryHandler(handle_skin_subtype, pattern='^(normal_wrinkles|normal_sensitive)$'))
-
-
     updater.start_polling()
     updater.idle()
+
 
 if __name__ == '__main__':
     main()
