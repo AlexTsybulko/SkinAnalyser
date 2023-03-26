@@ -37,9 +37,12 @@ def handle_skin_type(update: Update, context: CallbackContext):
     global skin_type
     skin_type = update.callback_query.data
     if skin_type == 'normal':
-        update.callback_query.message.edit_text('Choose your skin subtype:', reply_markup=get_skin_subtype_buttons())
-    elif skin_type in ['dry', 'oily', 'combinated']:
-        context.user_data['skin_type'] = skin_type
+        update.callback_query.message.edit_text('Choose your skin subtype:', reply_markup=get_skin_condition_buttons(skin_type))
+    elif skin_type == 'dry':
+        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
+    elif skin_type == 'oily':
+        update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
+    elif skin_type == 'combinated':
         update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
@@ -54,7 +57,12 @@ def handle_skin_condition(update: Update, context: CallbackContext):
 
 def get_skin_condition_buttons(skin_type):
     buttons = []
-    if skin_type == 'dry':
+    if skin_type == 'normal':
+        buttons = [
+            [InlineKeyboardButton("Normal + wrinkles", callback_data='Normal + wrinkles')],
+            [InlineKeyboardButton("Normal + sensitive", callback_data='Normal + sensitive')]
+        ]
+    elif skin_type == 'dry':
         buttons = [
             [InlineKeyboardButton("Dry + wrinkles", callback_data='Dry + wrinkles')],
             [InlineKeyboardButton("Dry + rashy", callback_data='Dry + rashy')],
@@ -78,11 +86,12 @@ def get_skin_condition_buttons(skin_type):
 
     return InlineKeyboardMarkup(buttons)
 
-
-# def handle_skin_subtype(update: Update, context: CallbackContext):
-#     global skin_subtype
-#     skin_subtype = update.callback_query.data
-#     update.callback_query.message.edit_text('Thank you for your input!')
+# def get_skin_subtype_buttons():
+#     keyboard = [
+#         [InlineKeyboardButton("Normal with wrinkles", callback_data='Normal with wrinkles')],
+#         [InlineKeyboardButton("Normal and sensitive", callback_data='Normal and sensitive')]
+#     ]
+#     return InlineKeyboardMarkup(keyboard)
 
 
 def get_age_buttons():
@@ -103,15 +112,6 @@ def get_skin_type_buttons():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-def get_skin_subtype_buttons():
-    keyboard = [
-        [InlineKeyboardButton("Normal with wrinkles", callback_data='Normal with wrinkles')],
-        [InlineKeyboardButton("Normal and sensitive", callback_data='Normal and sensitive')]
-    ]
-    return InlineKeyboardMarkup(keyboard)
-
-
-
 
 # Model creation and training
 def load_model():
@@ -124,7 +124,6 @@ def load_model():
         raise ValueError("Model file not found.")
 
     return model, class_indices
-
 
 
 def handle_photo(update: Update, context: CallbackContext):
@@ -183,26 +182,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-# def test(image_path: str):
-#     img = Image.open(image_path)
-#     img = img.convert('RGB')
-#     img = img.resize((IMG_SIZE, IMG_SIZE), Image.LANCZOS)
-#
-#     img_array = np.asarray(img) / 255.0
-#     img_batch = np.expand_dims(img_array, axis=0)
-#     prediction = model.predict(img_batch)
-#     predicted_class = np.argmax(prediction, axis=1)
-#
-#     # class_mapping = {v: k for k, v in class_indices.items()}
-#     print(f'{class_indices[predicted_class[0]]}!!!!!!!!!')
-#     skin_type = class_indices[predicted_class[0]]
-#
-#     return skin_type
-
-    # image_path = "dry(377).jpg"
-    # skin_type = test(image_path)
-    # print(skin_type)
-    # Replace with your API token
