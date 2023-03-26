@@ -77,8 +77,9 @@ def handle_skincare_brand(update: Update, context: CallbackContext):
 def handle_skincare_brand_exact(update: Update, context: CallbackContext):
     global skincare_brand_exact
     skincare_brand_exact = update.callback_query.data
-    update.callback_query.message.edit_text(
-            f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare exact brand: {skincare_brand_exact}')
+    update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
+    # update.callback_query.message.edit_text(
+    #         f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare exact brand: {skincare_brand_exact}')
 
 
 def handle_skincare_segment(update: Update, context: CallbackContext):
@@ -100,6 +101,7 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
 def handle_custom_skincare_brand(update: Update, context: CallbackContext):
     global skincare_brand
     skincare_brand = update.message.text
+    update.callback_query.message.edit_text('Choose face care category:', reply_markup=get_face_care_category_buttons())
 
 def handle_face_care(update: Update, context: CallbackContext):
     global face_care_category
@@ -441,7 +443,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(handle_skin_type, pattern='^(normal|dry|oily|combined)$'))
     dp.add_handler(CallbackQueryHandler(handle_skin_condition, pattern='^\w+\s\+\s\w+$'))
     dp.add_handler(CallbackQueryHandler(handle_skincare_segment, pattern='^(luxury|mid-priced|mass_market|russian|drugstore)$'))
-    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list|enter_own)$'))
+    dp.add_handler(CallbackQueryHandler(handle_skincare_brand, pattern='^(choose_from_list|enter_own|skip)$'))
     with open('skincare_brands.txt') as f:
         brands = [line.strip() for line in f]
     pattern = f'^({"|".join(brands + ["enter_my_own"])})$'
