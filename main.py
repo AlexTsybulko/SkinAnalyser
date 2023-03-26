@@ -42,7 +42,7 @@ def handle_skin_type(update: Update, context: CallbackContext):
         update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
     elif skin_type == 'oily':
         update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
-    elif skin_type == 'combinated':
+    elif skin_type == 'combined':
         update.callback_query.message.edit_text('Choose your skin condition:', reply_markup=get_skin_condition_buttons(skin_type))
     else:
         update.callback_query.message.edit_text('Thank you for your input!')
@@ -76,7 +76,7 @@ def get_skin_condition_buttons(skin_type):
             [InlineKeyboardButton("Oily + acne", callback_data='Oily + acne')],
             [InlineKeyboardButton("Oily + sensitive", callback_data='Oily + sensitive')]
         ]
-    elif skin_type == 'combinated':
+    elif skin_type == 'combined':
         buttons = [
             [InlineKeyboardButton("Combinated + wrinkles", callback_data='Combinated + wrinkles')],
             [InlineKeyboardButton("Combinated + rashy", callback_data='Combinated + rashy')],
