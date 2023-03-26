@@ -78,7 +78,7 @@ def handle_skincare_brand_exact(update: Update, context: CallbackContext):
     # else:
     #     update.callback_query.message.edit_text('Choose skincare brand segment:', reply_markup=get_skincare_segment_buttons())
     update.callback_query.message.edit_text(
-            f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}\nYour skincare exact brand: {skincare_brand_exact}')
+            f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare exact brand: {skincare_brand_exact}')
 
 
 def handle_skincare_segment(update: Update, context: CallbackContext):
@@ -98,19 +98,10 @@ def handle_skincare_segment(update: Update, context: CallbackContext):
         update.callback_query.message.edit_text('Thank you for your input!')
 
 
-# def handle_skincare_brand(update: Update, context: CallbackContext):
-#     global skincare_brand
-#     skincare_brand = update.callback_query.data
-#     if skincare_brand == 'other':
-#         update.callback_query.message.edit_text('Enter your skincare brand name:')
-#         return 'custom_brand'
-#     else:
-#         update.callback_query.message.edit_text(f'Thank you for your input!\n\nYour age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
-
 def handle_custom_skincare_brand(update: Update, context: CallbackContext):
     global skincare_brand
     skincare_brand = update.message.text
-    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare segment: {skincare_segment}\nYour skincare brand: {skincare_brand}')
+    update.message.reply_text(f'Your age: {age}\nYour skin type: {skin_type}\nYour skin subtype: {skin_subtype}\nYour skincare brand: {skincare_brand}')
 def get_skincare_buttons():
     keyboard = [
         [InlineKeyboardButton("Enter my own", callback_data='enter_own')],
